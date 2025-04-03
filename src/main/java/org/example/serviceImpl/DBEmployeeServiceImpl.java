@@ -3,73 +3,80 @@ package org.example.serviceImpl;
 
 import org.example.entity.Department;
 import org.example.entity.Employee;
+import org.example.repository.DepartmentRepository;
+import org.example.repository.EmployeeRepository;
 import org.example.request.EmployeeRequest;
 import org.example.service.DBEmployeeService;
-import org.springframework.transaction.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.transaction.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
 public class DBEmployeeServiceImpl implements DBEmployeeService {
 
-    private HibernateTemplate hibernateTemplate;
+    @Autowired
+    private EmployeeRepository employeeRepository;
 
     @Autowired
-    public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-        this.hibernateTemplate = hibernateTemplate;
-    }
+    private DepartmentRepository departmentRepository;
 
     @Override
     public long addNewEmployee(EmployeeRequest employeeRequest) {
-        Department department = hibernateTemplate.get(Department.class, employeeRequest.getDeptId());
-        if (department == null) {
+        Optional<Department> department = departmentRepository.findById(employeeRequest.getDeptId());
+        if (department.isEmpty()) {
             return -2;
         }
+        Department dep=department.get();
         Employee employee = new Employee();
         employee.setName(employeeRequest.getName());
         employee.setAge(employeeRequest.getAge());
         employee.setPhone(employeeRequest.getPhone());
-        employee.setDepartment(department);
-        hibernateTemplate.save(employee);
+        employee.setDepartment(dep);
+        employeeRepository.save(employee);
         return employee.getEmpId();
     }
 
     @Override
     public List<Employee> getAllEmployees() {
-        return hibernateTemplate.loadAll(Employee.class);
+        return employeeRepository.findAll();
     }
 
     @Override
     public Employee getEmployeeById(long empId) {
-        return hibernateTemplate.get(Employee.class, empId); // ✅ Corrected
+        Optional<Employee> employee=employeeRepository.findById(empId);
+        if(employee.isEmpty()){
+            return null;
+        }
+        return employee.get();
     }
 
     @Override
     public long updateEmployee(EmployeeRequest updatedEmployeeRequest, long empId) {
-        Employee employee = hibernateTemplate.get(Employee.class, empId);
-        Department department = hibernateTemplate.get(Department.class, updatedEmployeeRequest.getDeptId());
-        if (employee == null) {
+        Optional<Employee> emp = employeeRepository.findById(empId);
+        Optional<Department> dep = departmentRepository.findById(updatedEmployeeRequest.getDeptId());
+        if (emp.isEmpty()) {
             return -1;
-        } else if (department == null) {
+        } else if (dep.isEmpty()) {
             return -2;
         }
+        Employee employee=emp.get();
         employee.setName(updatedEmployeeRequest.getName());
         employee.setAge(updatedEmployeeRequest.getAge());
         employee.setPhone(updatedEmployeeRequest.getPhone());
-        employee.setDepartment(department);
-        hibernateTemplate.update(employee);
+        employee.setDepartment(dep.get());
+        employeeRepository.save(employee);
         return empId;
     }
 
     @Override
     public long deleteEmployee(long empId) {
-        Employee emp = hibernateTemplate.get(Employee.class, empId);
-        if (emp != null) {
-            hibernateTemplate.delete(emp);
+        Optional<Employee> emp = employeeRepository.findById(empId);
+        if (emp.isPresent()) {
+            employeeRepository.delete(emp.get());
             return empId;
         }
         return -1;

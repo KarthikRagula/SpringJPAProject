@@ -2,59 +2,61 @@ package org.example.serviceImpl;
 
 import jakarta.transaction.Transactional;
 import org.example.entity.Department;
+import org.example.repository.DepartmentRepository;
 import org.example.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Transactional
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
-    private HibernateTemplate hibernateTemplate;
-
     @Autowired
-    public void setHibernateTemplate(HibernateTemplate hibernateTemplate) {
-        this.hibernateTemplate = hibernateTemplate;
-    }
+    private DepartmentRepository departmentRepository;
 
     @Override
     public long addNewDepartment(Department department) {
-        hibernateTemplate.save(department);
+        departmentRepository.save(department);
 //        int a=5/0;
         return department.getDeptId();
     }
 
     @Override
     public List<Department> getAllDepartments() {
-        return hibernateTemplate.loadAll(Department.class);
+        return departmentRepository.findAll();
     }
 
     @Override
     public Department getDepartmentById(long deptId) {
-        return hibernateTemplate.get(Department.class, deptId);
+        Optional<Department> dep=departmentRepository.findById(deptId);
+        if(dep.isEmpty()){
+            return null;
+        }
+        return dep.get();
     }
 
     @Override
-    public long updateDepartment(Department department, long deptId) {
-        Department department1 = hibernateTemplate.get(Department.class, deptId);
-        if (department1 != null) {
-            department1.setDeptName(department.getDeptName());
-            hibernateTemplate.update(department1);
-            return deptId;
+    public long updateDepartment(Department dep, long deptId) {
+        Optional<Department> department = departmentRepository.findById(deptId);
+        if(department.isEmpty()){
+            return -1;
         }
-        return -1;
+        Department department1=department.get();
+        department1.setDeptName(dep.getDeptName());
+        departmentRepository.save(department1);
+        return deptId;
     }
 
     @Override
     public long deleteDepartment(long deptId) {
-        Department department = hibernateTemplate.get(Department.class, deptId);
-        if (department != null) {
-            hibernateTemplate.delete(department);
-            return deptId;
+        Optional<Department> department = departmentRepository.findById(deptId);
+        if(department.isEmpty()){
+            return -1;
         }
-        return -1;
+        departmentRepository.delete(department.get());
+        return deptId;
     }
 }
