@@ -2,6 +2,7 @@ package org.example.serviceImpl;
 
 import jakarta.transaction.Transactional;
 import org.example.entity.Department;
+import org.example.exception.DepartmentNotFoundException;
 import org.example.repository.DepartmentRepository;
 import org.example.service.DepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,6 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public long addNewDepartment(Department department) {
         departmentRepository.save(department);
-//        int a=5/0;
         return department.getDeptId();
     }
 
@@ -31,9 +31,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Department getDepartmentById(long deptId) {
-        Optional<Department> dep=departmentRepository.findById(deptId);
-        if(dep.isEmpty()){
-            return null;
+        Optional<Department> dep = departmentRepository.findById(deptId);
+        if (dep.isEmpty()) {
+            throw new DepartmentNotFoundException("Department with id " + deptId + " not found");
         }
         return dep.get();
     }
@@ -41,20 +41,19 @@ public class DepartmentServiceImpl implements DepartmentService {
     @Override
     public long updateDepartment(Department dep, long deptId) {
         Optional<Department> department = departmentRepository.findById(deptId);
-        if(department.isEmpty()){
-            return -1;
+        if (department.isEmpty()) {
+            throw new DepartmentNotFoundException("Department with id " + deptId + " not found");
         }
-        Department department1=department.get();
-        department1.setDeptName(dep.getDeptName());
-        departmentRepository.save(department1);
+        dep.setDeptId(deptId);
+        departmentRepository.save(dep);
         return deptId;
     }
 
     @Override
     public long deleteDepartment(long deptId) {
         Optional<Department> department = departmentRepository.findById(deptId);
-        if(department.isEmpty()){
-            return -1;
+        if (department.isEmpty()) {
+            throw new DepartmentNotFoundException("Department with id " + deptId + " not found");
         }
         departmentRepository.delete(department.get());
         return deptId;

@@ -19,14 +19,7 @@ public class DepartmentController {
 
     @PostMapping("/")
     public ResponseEntity<?> createDepartment(@RequestBody Department department) {
-        long deptId=-1;
-        try{
-            deptId = departmentService.addNewDepartment(department);
-        }
-        catch (Exception e){
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+        long deptId = departmentService.addNewDepartment(department);
         return new ResponseEntity<>(new ResponseMessage("Department with id " + deptId + " created succesfully"), HttpStatus.OK);
     }
 
@@ -42,27 +35,18 @@ public class DepartmentController {
     @GetMapping("/{deptId}")
     public ResponseEntity<?> getDepartmentById(@PathVariable long deptId) {
         Department dept = departmentService.getDepartmentById(deptId);
-        if (dept == null) {
-            return new ResponseEntity<>(new ResponseMessage("Department with id " + deptId + " not found."), HttpStatus.OK);
-        }
         return new ResponseEntity<>(dept, HttpStatus.OK);
     }
 
     @PutMapping("/{deptId}")
     public ResponseEntity<?> updateDepartment(@RequestBody Department updatedDepartment, @PathVariable long deptId) {
         long departmentId = departmentService.updateDepartment(updatedDepartment, deptId);
-        if (departmentId == -1) {
-            return new ResponseEntity<>(new ResponseMessage("Department with id " + deptId + " not found"), HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(new ResponseMessage("Department with id " + departmentId + " updated successfully"), HttpStatus.OK);
     }
 
     @DeleteMapping("/{deptId}")
     public ResponseEntity<?> deleteDepartment(@PathVariable long deptId) {
         long departmentId = departmentService.deleteDepartment(deptId);
-        if (departmentId == -1) {
-            return new ResponseEntity<>(new ResponseMessage("Department with id " + deptId + " not found"), HttpStatus.NOT_FOUND);
-        }
         return new ResponseEntity<>(new ResponseMessage("Department with id " + departmentId + " deleted successfully"), HttpStatus.OK);
     }
 }

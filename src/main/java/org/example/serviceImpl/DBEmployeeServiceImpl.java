@@ -3,6 +3,8 @@ package org.example.serviceImpl;
 
 import org.example.entity.Department;
 import org.example.entity.Employee;
+import org.example.exception.DepartmentNotFoundException;
+import org.example.exception.EmployeeNotFoundException;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.EmployeeRepository;
 import org.example.service.DBEmployeeService;
@@ -27,7 +29,7 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     public long addNewEmployee(Employee employee) {
         Optional<Department> department = departmentRepository.findById(employee.getDepartment().getDeptId());
         if (department.isEmpty()) {
-            return -2;
+            throw new DepartmentNotFoundException("Department with id " + employee.getDepartment().getDeptId() + " not found");
         }
         employeeRepository.save(employee);
         return employee.getEmpId();
@@ -40,9 +42,9 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
 
     @Override
     public Employee getEmployeeById(long empId) {
-        Optional<Employee> employee=employeeRepository.findById(empId);
-        if(employee.isEmpty()){
-            return null;
+        Optional<Employee> employee = employeeRepository.findById(empId);
+        if (employee.isEmpty()) {
+            throw new EmployeeNotFoundException("Employee with id " + empId + " not found");
         }
         return employee.get();
     }
@@ -52,10 +54,11 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
         Optional<Employee> emp = employeeRepository.findById(empId);
         Optional<Department> dep = departmentRepository.findById(updatedEmployee.getDepartment().getDeptId());
         if (emp.isEmpty()) {
-            return -1;
+            throw new EmployeeNotFoundException("Employee with id " + empId + " not found");
         } else if (dep.isEmpty()) {
-            return -2;
+            throw new DepartmentNotFoundException("Department with id " + updatedEmployee.getDepartment().getDeptId() + " not found");
         }
+        updatedEmployee.setEmpId(empId);
         employeeRepository.save(updatedEmployee);
         return empId;
     }
@@ -63,10 +66,10 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     @Override
     public long deleteEmployee(long empId) {
         Optional<Employee> emp = employeeRepository.findById(empId);
-        if (emp.isPresent()) {
-            employeeRepository.delete(emp.get());
-            return empId;
+        if (emp.isEmpty()) {
+            throw new EmployeeNotFoundException("Employee with id " + empId + " not found");
         }
-        return -1;
+        employeeRepository.delete(emp.get());
+        return empId;
     }
 }
