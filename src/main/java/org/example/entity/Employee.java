@@ -8,19 +8,24 @@ import java.util.Objects;
 
 @Entity
 @SequenceGenerator(name="employee_sequence",sequenceName = "employee_sequence", allocationSize = 1)
+@Table(name="EMPLOYEE")
 public class Employee {
 
     public static long idCounter = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "employee_sequence")
+    @Column(name="employee_id",nullable = false)
     private long empId;
+    @Column(name="employee_name")
     private String name;
+    @Column(name="employee_age")
     private int age;
+    @Column(name="employee_phone")
     private String phone;
 
     @ManyToOne
-    @JoinColumn(name = "deptId", nullable = false)
+    @JoinColumn(name = "dept_id", nullable = false)
     private Department department;
 
     public Employee(long empId, String name, int age, String phone) {

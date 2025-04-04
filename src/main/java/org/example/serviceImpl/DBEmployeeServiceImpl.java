@@ -5,7 +5,6 @@ import org.example.entity.Department;
 import org.example.entity.Employee;
 import org.example.repository.DepartmentRepository;
 import org.example.repository.EmployeeRepository;
-import org.example.request.EmployeeRequest;
 import org.example.service.DBEmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.*;
@@ -25,17 +24,11 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     private DepartmentRepository departmentRepository;
 
     @Override
-    public long addNewEmployee(EmployeeRequest employeeRequest) {
-        Optional<Department> department = departmentRepository.findById(employeeRequest.getDeptId());
+    public long addNewEmployee(Employee employee) {
+        Optional<Department> department = departmentRepository.findById(employee.getDepartment().getDeptId());
         if (department.isEmpty()) {
             return -2;
         }
-        Department dep=department.get();
-        Employee employee = new Employee();
-        employee.setName(employeeRequest.getName());
-        employee.setAge(employeeRequest.getAge());
-        employee.setPhone(employeeRequest.getPhone());
-        employee.setDepartment(dep);
         employeeRepository.save(employee);
         return employee.getEmpId();
     }
@@ -55,20 +48,15 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     }
 
     @Override
-    public long updateEmployee(EmployeeRequest updatedEmployeeRequest, long empId) {
+    public long updateEmployee(Employee updatedEmployee, long empId) {
         Optional<Employee> emp = employeeRepository.findById(empId);
-        Optional<Department> dep = departmentRepository.findById(updatedEmployeeRequest.getDeptId());
+        Optional<Department> dep = departmentRepository.findById(updatedEmployee.getDepartment().getDeptId());
         if (emp.isEmpty()) {
             return -1;
         } else if (dep.isEmpty()) {
             return -2;
         }
-        Employee employee=emp.get();
-        employee.setName(updatedEmployeeRequest.getName());
-        employee.setAge(updatedEmployeeRequest.getAge());
-        employee.setPhone(updatedEmployeeRequest.getPhone());
-        employee.setDepartment(dep.get());
-        employeeRepository.save(employee);
+        employeeRepository.save(updatedEmployee);
         return empId;
     }
 

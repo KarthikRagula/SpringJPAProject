@@ -7,11 +7,14 @@ import java.util.Objects;
 
 @Entity
 @SequenceGenerator(name="department_sequence", sequenceName = "department_sequence", allocationSize = 1)
+@Table(name="DEPARTMENT")
 public class Department {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "department_sequence")
+    @Column(name="dept_id",nullable = false)
     private long deptId;
+    @Column(name="department_name")
     private String deptName;
 
     @OneToMany(mappedBy = "department", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
