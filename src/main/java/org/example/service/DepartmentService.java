@@ -6,13 +6,13 @@ import java.util.List;
 
 public interface DepartmentService {
 
-    long addNewDepartment(Department department);
+    Department addNewDepartment(Department department);
 
     List<Department> getAllDepartments();
 
     Department getDepartmentById(long deptId);
 
-    long updateDepartment(Department department, long deptId);
+    Department updateDepartment(Department department, long deptId);
 
     long deleteDepartment(long deptId);
 }

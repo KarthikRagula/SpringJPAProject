@@ -19,8 +19,8 @@ public class DepartmentController {
 
     @PostMapping("/")
     public ResponseEntity<?> createDepartment(@RequestBody Department department) {
-        long deptId = departmentService.addNewDepartment(department);
-        return new ResponseEntity<>(new ResponseMessage("Department with id " + deptId + " created succesfully"), HttpStatus.OK);
+        Department dept = departmentService.addNewDepartment(department);
+        return new ResponseEntity<>(dept, HttpStatus.OK);
     }
 
     @GetMapping("/")
@@ -40,8 +40,8 @@ public class DepartmentController {
 
     @PutMapping("/{deptId}")
     public ResponseEntity<?> updateDepartment(@RequestBody Department updatedDepartment, @PathVariable long deptId) {
-        long departmentId = departmentService.updateDepartment(updatedDepartment, deptId);
-        return new ResponseEntity<>(new ResponseMessage("Department with id " + departmentId + " updated successfully"), HttpStatus.OK);
+        Department department = departmentService.updateDepartment(updatedDepartment, deptId);
+        return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
     @DeleteMapping("/{deptId}")

@@ -26,13 +26,13 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     private DepartmentRepository departmentRepository;
 
     @Override
-    public long addNewEmployee(Employee employee) {
+    public Employee addNewEmployee(Employee employee) {
         Optional<Department> department = departmentRepository.findById(employee.getDepartment().getDeptId());
         if (department.isEmpty()) {
             throw new DepartmentNotFoundException("Department with id " + employee.getDepartment().getDeptId() + " not found");
         }
         employeeRepository.save(employee);
-        return employee.getEmpId();
+        return employee;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     }
 
     @Override
-    public long updateEmployee(Employee updatedEmployee, long empId) {
+    public Employee updateEmployee(Employee updatedEmployee, long empId) {
         Optional<Employee> emp = employeeRepository.findById(empId);
         Optional<Department> dep = departmentRepository.findById(updatedEmployee.getDepartment().getDeptId());
         if (emp.isEmpty()) {
@@ -60,7 +60,7 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
         }
         updatedEmployee.setEmpId(empId);
         employeeRepository.save(updatedEmployee);
-        return empId;
+        return updatedEmployee;
     }
 
     @Override
