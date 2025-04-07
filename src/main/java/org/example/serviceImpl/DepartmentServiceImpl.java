@@ -39,12 +39,11 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Department updateDepartment(Department dep, long deptId) {
-        Optional<Department> department = departmentRepository.findById(deptId);
+    public Department updateDepartment(Department dep) {
+        Optional<Department> department = departmentRepository.findById(dep.getDeptId());
         if (department.isEmpty()) {
-            throw new DepartmentNotFoundException("Department with id " + deptId + " not found");
+            throw new DepartmentNotFoundException("Department with id " + dep.getDeptId() + " not found");
         }
-        dep.setDeptId(deptId);
         departmentRepository.save(dep);
         return dep;
     }

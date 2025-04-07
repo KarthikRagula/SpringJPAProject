@@ -50,15 +50,14 @@ public class DBEmployeeServiceImpl implements DBEmployeeService {
     }
 
     @Override
-    public Employee updateEmployee(Employee updatedEmployee, long empId) {
-        Optional<Employee> emp = employeeRepository.findById(empId);
+    public Employee updateEmployee(Employee updatedEmployee) {
+        Optional<Employee> emp = employeeRepository.findById(updatedEmployee.getEmpId());
         Optional<Department> dep = departmentRepository.findById(updatedEmployee.getDepartment().getDeptId());
         if (emp.isEmpty()) {
-            throw new EmployeeNotFoundException("Employee with id " + empId + " not found");
+            throw new EmployeeNotFoundException("Employee with id " + updatedEmployee.getEmpId() + " not found");
         } else if (dep.isEmpty()) {
             throw new DepartmentNotFoundException("Department with id " + updatedEmployee.getDepartment().getDeptId() + " not found");
         }
-        updatedEmployee.setEmpId(empId);
         employeeRepository.save(updatedEmployee);
         return updatedEmployee;
     }

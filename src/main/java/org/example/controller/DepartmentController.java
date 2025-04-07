@@ -38,9 +38,9 @@ public class DepartmentController {
         return new ResponseEntity<>(dept, HttpStatus.OK);
     }
 
-    @PutMapping("/{deptId}")
-    public ResponseEntity<?> updateDepartment(@RequestBody Department updatedDepartment, @PathVariable long deptId) {
-        Department department = departmentService.updateDepartment(updatedDepartment, deptId);
+    @PutMapping("/")
+    public ResponseEntity<?> updateDepartment(@RequestBody Department updatedDepartment) {
+        Department department = departmentService.updateDepartment(updatedDepartment);
         return new ResponseEntity<>(department, HttpStatus.OK);
     }
 
